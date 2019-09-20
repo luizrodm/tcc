@@ -1,0 +1,68 @@
+<nb-card>
+    <div>
+    <ngx-status-card [title]="nome" type="primary">
+      <i ngClass="fas fa-robot"></i>
+    </ngx-status-card>
+    <div style="margin: 3%">
+      <ngx-stepper-estados [estados]="estados" [estadoAtual]="estadoAtual"></ngx-stepper-estados>
+    </div>
+
+    <div class="row">
+      <div class="col-xxxl-6 col-xxl-6 col-lg-6 col-md-6 container">
+        <div class="vertical-center">
+          <div class="row">
+            <div class="container">
+                <h5>Distância frontal</h5>
+            </div>
+          </div>
+          <div class="row">
+            <div class="container">
+                <h1 style="display: inline-block;">{{distancia}} cm</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xxxl-6 col-xxl-6 col-lg-6 col-md-6 container">
+          <ngx-temperature (altVelocidade)="setValueVelocidade($event)"></ngx-temperature>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="container">
+      <h5>Potência dos Motores:</h5>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-xxxl-2 col-xxl-2 col-lg-2 col-md-2">
+          <h5>Esquerdo</h5>
+      </div>
+      <div class="col-xxxl-10 col-xxl-10 col-lg-10 col-md-10 container-progressbar">
+          <nb-actions>
+            <nb-action icon="minus-outline" (click)="setValueEsq(potenciaEsq - 10)"></nb-action>
+          </nb-actions>
+          <nb-progress-bar [value]="potenciaEsq" [status]="statusEsq" [displayValue]="true"></nb-progress-bar>
+          <nb-actions>
+            <nb-action icon="plus-outline" (click)="setValueEsq(potenciaEsq + 10)"></nb-action>
+          </nb-actions>
+      </div>
+  </div>
+
+  <div class="row">
+      <div class="col-xxxl-2 col-xxl-2 col-lg-2 col-md-2">
+          <h5>Direito</h5>
+      </div>
+      <div class="col-xxxl-10 col-xxl-10 col-lg-10 col-md-10 container-progressbar">
+          <nb-actions>
+            <nb-action icon="minus-outline" (click)="setValueDir(potenciaDir - 10)"></nb-action>
+          </nb-actions>
+          <nb-progress-bar [value]="potenciaDir" [status]="statusDir" [displayValue]="true"></nb-progress-bar>
+          <nb-actions>
+            <nb-action icon="plus-outline" (click)="setValueDir(potenciaDir + 10)"></nb-action>
+          </nb-actions>
+      </div>
+  </div>
+
+
+</nb-card>>

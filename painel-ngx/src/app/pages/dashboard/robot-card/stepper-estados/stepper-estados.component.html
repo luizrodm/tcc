@@ -1,0 +1,5 @@
+<nb-stepper orientation="horizontal" disableStepNavigation #child [selectedIndex]="estadoAtual">
+  <nb-step *ngFor="let estado of estados" [label]="estado.descricao">
+    <ng-template #labelOne>{{estado.descricao}}</ng-template>
+  </nb-step>
+</nb-stepper>

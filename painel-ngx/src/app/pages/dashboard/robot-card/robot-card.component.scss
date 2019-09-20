@@ -1,0 +1,25 @@
+.row{
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.container{
+    text-align: center;
+}
+
+.vertical-center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+
+  .container-progressbar {
+    display: flex;
+    align-items: center;
+  }
+
+  nb-progress-bar {
+    flex: 1;
+  }

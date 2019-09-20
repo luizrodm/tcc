@@ -1,0 +1,7 @@
+<div class="row">
+  <div *ngFor="let robo of robos" class="col-xxxl-6 col-xxl-6 col-lg-6 col-md-6">
+    <ngx-robot-card [id]="robo.id" [nome]="robo.nome" [estados]="robo.estados" [estadoAtual]="robo.estadoAtual" [distancia]="robo.distancia" 
+                    (altPotenciaEsq) = enviaPotenciaEsq($event) (altPotenciaDir) = enviaPotenciaDir($event) (altVelocidade) = enviaVelocidade($event)>
+    </ngx-robot-card>
+  </div>  
+</div>
