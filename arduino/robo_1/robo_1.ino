@@ -38,9 +38,10 @@ PubSubClient MQTT(espClient);
 unsigned long tempoAtual = 0;
 unsigned long tempoAnterior = 0;
 int distancia = 0;
-int velocidadeGlobal = 50;
-float potenciaEsquerda = 0.5;
-float potenciaDireita = 0.5;
+int velocidadeGlobal = 80;
+float potenciaEsquerda = 0.8;
+float potenciaDireita = 0.9;
+int distanciaInicial;
 
 
 int estado;
@@ -49,7 +50,8 @@ int estado;
 #define AGUARDANDO_CONFIRMACAO  1
 #define TRANSPORTANDO_PACOTE    2
 #define AFASTANDO_ROBO          3
-#define VOLTANDO_POS_INICIAL    4
+#define AGUARDANDO_VOLTA        4
+#define VOLTANDO_POS_INICIAL    5
 
  
 void setup() 
@@ -69,6 +71,22 @@ void setup()
     Serial.begin(115200);
 
     estado = AGUARDANDO_PACOTE;
+    calibraDistancia();
+}
+
+void calibraDistancia()
+{
+  int medida = ultrasonic.convert(ultrasonic.timing(), Ultrasonic::CM); 
+  Serial.println("Calibrando distância...");
+  //realiza 50 medidas da distância inicial e calcula a média
+  for(int i=0; i<50; i++){
+    medida = (medida+ultrasonic.convert(ultrasonic.timing(), Ultrasonic::CM))/2; 
+    Serial.print("Medida: ");
+    Serial.println(medida);
+  }
+  distanciaInicial = medida;
+  Serial.print("Distância Inicial: ");
+  Serial.println(distanciaInicial);
 }
   
 
@@ -125,14 +143,20 @@ void trataMensagem(String msg){
       case AGUARDANDO_PACOTE:
         break;
       case AGUARDANDO_CONFIRMACAO:
-        if(msg == "E1")
+        if(comando == "E1")
           estado = TRANSPORTANDO_PACOTE;
         break;
       case TRANSPORTANDO_PACOTE:
-        if(msg == "E3")
+        if(comando == "E3"){
+          delay(200);
           estado = AFASTANDO_ROBO;
+        }
         break;
       case AFASTANDO_ROBO:
+        break;
+      case AGUARDANDO_VOLTA:
+        if(comando == "E0")
+          estado = VOLTANDO_POS_INICIAL;
         break;
       case VOLTANDO_POS_INICIAL:
         break;
@@ -174,13 +198,18 @@ void verificaEstado(){
       sprintf(payload,"%s%i","E3-",distancia);
       MQTT.publish(TOPICO_PUBLISH, payload);
       if(distancia > 10)
-        estado = VOLTANDO_POS_INICIAL;
+        estado = AGUARDANDO_VOLTA;
+      break;
+    case AGUARDANDO_VOLTA:
+      pararMover();
+      sprintf(payload,"%s%i","E4-",distancia);
+      MQTT.publish(TOPICO_PUBLISH, payload);
       break;
     case VOLTANDO_POS_INICIAL:
       mover(-velocidadeGlobal);
-      sprintf(payload,"%s%i","E4-",distancia);
+      sprintf(payload,"%s%i","E5-",distancia);
       MQTT.publish(TOPICO_PUBLISH, payload);
-      if (distancia > 100)
+      if (distancia >= distanciaInicial)
         estado = AGUARDANDO_PACOTE;
       break;
   }

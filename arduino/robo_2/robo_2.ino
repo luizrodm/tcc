@@ -38,9 +38,10 @@ PubSubClient MQTT(espClient);
 unsigned long tempoAtual = 0;
 unsigned long tempoAnterior = 0;
 int distancia = 0;
-int velocidadeGlobal = 50;
-float potenciaEsquerda = 0.5;
-float potenciaDireita = 0.5;
+int velocidadeGlobal = 80;
+float potenciaEsquerda = 0.9;
+float potenciaDireita = 0.7;
+int distanciaInicial;
 
 int estado;
 //ESTADOS:
@@ -69,6 +70,22 @@ void setup()
     Serial.begin(115200);
 
     estado = AGUARDANDO_CONTATO;
+    calibraDistancia();
+}
+
+void calibraDistancia()
+{
+  int medida = ultrasonic.convert(ultrasonic.timing(), Ultrasonic::CM); 
+  Serial.println("Calibrando distância...");
+  //realiza 50 medidas da distância inicial e calcula a média
+  for(int i=0; i<50; i++){
+    medida = (medida+ultrasonic.convert(ultrasonic.timing(), Ultrasonic::CM))/2; 
+    Serial.print("Medida: ");
+    Serial.println(medida);
+  }
+  distanciaInicial = medida;
+  Serial.print("Distância Inicial: ");
+  Serial.println(distanciaInicial);
 }
   
 
@@ -124,17 +141,17 @@ void trataMensagem(String msg){
     switch(estado)
     {
       case AGUARDANDO_CONTATO:
-        if(msg == "E1")
+        if(comando == "E1")
           estado = AGUARDANDO_CONFIRMACAO;
         break;
       case AGUARDANDO_CONFIRMACAO:
-        if(msg == "E2")
+        if(comando == "E2")
           estado = AGUARDANDO_CHEGADA;
         break;  
       case AGUARDANDO_CHEGADA:
         break;
       case AGUARDANDO_AFASTAMENTO:
-        if(msg == "E4")
+        if(comando == "E4")
           estado = TRANSPORTANDO_PACOTE;
         break;
       case TRANSPORTANDO_PACOTE:
@@ -190,7 +207,7 @@ void verificaEstado(){
       mover(-velocidadeGlobal);
       sprintf(payload,"%s%i","E5-",distancia);
       MQTT.publish(TOPICO_PUBLISH, payload);
-      if (distancia > 100)
+      if (distancia >= distanciaInicial && distancia <= distanciaInicial+20)
         estado = AGUARDANDO_CONTATO;
       break;
   }

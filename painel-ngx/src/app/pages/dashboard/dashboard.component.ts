@@ -104,12 +104,13 @@ export class DashboardComponent implements OnDestroy {
                           {numero: 2, descricao: "Confirmação"},
                           {numero: 3, descricao: "Transporte"},
                           {numero: 4, descricao: "Afastamento"},
-                          {numero: 5, descricao: "Retorno"}],
+                          {numero: 5, descricao: "Aguardo"},
+                          {numero: 6, descricao: "Retorno"}],
                 estadoAtual: 0,
                 distancia: 0,
-                velocidade: 0,
-                potenciaEsq: 0,
-                potenciaDir: 0},
+                velocidade: 80,
+                potenciaEsq: 80,
+                potenciaDir: 90},
                 {id: 2,
                 nome: "Robô 2",
                 estados: [{numero: 1, descricao: "Contato"},
@@ -117,12 +118,12 @@ export class DashboardComponent implements OnDestroy {
                           {numero: 3, descricao: "Chegada"},
                           {numero: 4, descricao: "Afastamento"},
                           {numero: 5, descricao: "Transporte"},
-                          {numero: 5, descricao: "Retorno"}],
+                          {numero: 6, descricao: "Retorno"}],
                 estadoAtual: 0,
                 distancia: 0,
-                velocidade: 0,
-                potenciaEsq: 0,
-                potenciaDir: 0}]
+                velocidade: 80,
+                potenciaEsq: 90,
+                potenciaDir: 70}]
     this.conectar();
   }
 

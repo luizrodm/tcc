@@ -1,4 +1,4 @@
-import { Component, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, Output, Input, EventEmitter } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 import { Temperature, TemperatureHumidityData } from '../../../@core/data/temperature-humidity';
 import { takeWhile } from 'rxjs/operators';
@@ -12,6 +12,7 @@ import { forkJoin } from 'rxjs';
 export class TemperatureComponent implements OnDestroy {
   
   @Output() altVelocidade = new EventEmitter<number>();
+  @Input() humidity: number;
 
   private alive = true;
 
@@ -21,7 +22,7 @@ export class TemperatureComponent implements OnDestroy {
   temperatureMode = 'cool';
 
   humidityData: Temperature;
-  humidity: number;
+  //humidity: number;
   humidityOff = false;
   humidityMode = 'heat';
 

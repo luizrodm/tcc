@@ -16,17 +16,20 @@ export class RobotCardComponent implements OnInit {
   @Input() estados: Estado[];
   @Input() estadoAtual: number;
   @Input() distancia: number;
+  @Input() velocidade: number;
+  @Input() potenciaEsq: number;
+  @Input() potenciaDir: number;
   @Output() altVelocidade = new EventEmitter<number[]>();
   @Output() altPotenciaEsq = new EventEmitter<number[]>();
   @Output() altPotenciaDir = new EventEmitter<number[]>();
-  private potenciaEsq: number;
-  private potenciaDir: number;
-  private velocidade: number;
+  //private potenciaEsq: number;
+  //private potenciaDir: number;
+  //private velocidade: number;
 
   constructor(private themeService: NbThemeService) {
-    this.velocidade = 50;
-    this.potenciaEsq = 50;
-    this.potenciaDir = 50;
+    this.velocidade = 80;
+    this.potenciaEsq = 80;
+    this.potenciaDir = 80;
   }
 
   ngOnInit() {
