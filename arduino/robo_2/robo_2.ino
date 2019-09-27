@@ -37,6 +37,7 @@ WiFiClient espClient;
 PubSubClient MQTT(espClient);
 unsigned long tempoAtual = 0;
 unsigned long tempoAnterior = 0;
+unsigned long ultimoContato = 0;
 int distancia = 0;
 int velocidadeGlobal = 80;
 float potenciaEsquerda = 0.9;
@@ -51,6 +52,7 @@ int estado;
 #define AGUARDANDO_AFASTAMENTO  3
 #define TRANSPORTANDO_PACOTE    4
 #define VOLTANDO_POS_INICIAL    5
+#define FALHA_CONEXAO           6
 
  
 void setup() 
@@ -131,6 +133,7 @@ void trataMensagem(String msg){
   String comando = msg.substring(0,2);
   int valor = msg.substring(3).toInt();
 
+  //Comandos do painel de controle
   if (comando == "L2"){
     potenciaEsquerda = ((float)valor)/100;
   } else if (comando =="R2"){
@@ -138,6 +141,8 @@ void trataMensagem(String msg){
   } else if (comando =="V2"){
     velocidadeGlobal = valor;
   } else {
+    //Comandos do robô 1
+    ultimoContato = millis();
     switch(estado)
     {
       case AGUARDANDO_CONTATO:
@@ -157,6 +162,9 @@ void trataMensagem(String msg){
       case TRANSPORTANDO_PACOTE:
         break;
       case VOLTANDO_POS_INICIAL:
+        break;
+      case FALHA_CONEXAO: //recebeu contato
+        estado = VOLTANDO_POS_INICIAL;
         break;
     }
   }
@@ -209,6 +217,9 @@ void verificaEstado(){
       MQTT.publish(TOPICO_PUBLISH, payload);
       if (distancia >= distanciaInicial && distancia <= distanciaInicial+20)
         estado = AGUARDANDO_CONTATO;
+      break;
+    case FALHA_CONEXAO:
+      MQTT.publish(TOPICO_PUBLISH, "R1-0");
       break;
   }
 
@@ -296,6 +307,13 @@ void loopSensor(){
       tempoAnterior = tempoAtual;
   }
 }
+
+void verificaContato(){
+  int agora = millis();
+  if(agora - ultimoContato > 1000){
+    estado = FALHA_CONEXAO;
+  }
+}
  
  
 //programa principal
@@ -306,6 +324,8 @@ void loop()
  
     //keep-alive da comunicação com broker MQTT
     MQTT.loop();
+
+    verificaContato();
     
     loopSensor();
 }

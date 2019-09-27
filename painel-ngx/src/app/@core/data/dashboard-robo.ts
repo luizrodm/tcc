@@ -1,6 +1,7 @@
 import { Estado } from './dashboard-estado';
 
 export interface Robo {
+    status: boolean,
     id: number,
     nome: string,
     estados: Estado[],

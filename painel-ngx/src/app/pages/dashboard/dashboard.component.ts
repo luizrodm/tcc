@@ -23,6 +23,7 @@ export class DashboardComponent implements OnDestroy {
   private robos: Robo[];
   private connection : any;
   private session: any;
+  private timeout: any;
 
   solarValue: number;
   lightCard: CardSettings = {
@@ -98,7 +99,13 @@ export class DashboardComponent implements OnDestroy {
         this.solarValue = data;
       });
 
-    this.robos=[{id: 1,
+    this.setRobos();
+    this.conectar();
+  }
+
+  setRobos(){
+    this.robos=[{status: false,
+                id: 1,
                 nome: "Robô 1",
                 estados: [{numero: 1, descricao: "Recebimento"},
                           {numero: 2, descricao: "Confirmação"},
@@ -111,7 +118,8 @@ export class DashboardComponent implements OnDestroy {
                 velocidade: 80,
                 potenciaEsq: 80,
                 potenciaDir: 90},
-                {id: 2,
+                {status: false,
+                id: 2,
                 nome: "Robô 2",
                 estados: [{numero: 1, descricao: "Contato"},
                           {numero: 2, descricao: "Confirmação"},
@@ -123,8 +131,7 @@ export class DashboardComponent implements OnDestroy {
                 distancia: 0,
                 velocidade: 80,
                 potenciaEsq: 90,
-                potenciaDir: 70}]
-    this.conectar();
+                potenciaDir: 70}];
   }
 
   conectar(){
@@ -143,17 +150,38 @@ export class DashboardComponent implements OnDestroy {
       function oneventRobo1(args) {
           //console.log("ROBO 1:", atob(args.substring(1,args.lenght))); //retirando caracter não reconhecido na posição 0
           let payload = atob(args.substring(1,args.lenght));
-          self.robos[0].estadoAtual = parseInt(payload[1]);
-          console.log(payload.split("-"));
-          self.robos[0].distancia = parseInt(payload.split("-")[1]);
+
+          switch (payload[0]){
+            case 'E':
+              clearTimeout(self.timeout);
+              self.robos[0].estadoAtual = parseInt(payload[1]);
+              self.robos[0].distancia = parseInt(payload.split("-")[1]);
+              self.robos[0].status = true;
+              self.timeout = setTimeout(function(){self.setRobos();},1000);
+              break;
+            case 'R':
+              self.robos[1].status = false;
+              break;
+          }
+
+
+          
       }
       session.subscribe('uepg.LuizRodolfo.robo_1', oneventRobo1);
 
       function oneventRobo2(args) {
         //console.log("ROBO 2:", atob(args.substring(1,args.lenght))); //retirando caracter não reconhecido na posição 0
         let payload = atob(args.substring(1,args.lenght));
-        self.robos[1].estadoAtual = parseInt(payload[1]);
-        self.robos[1].distancia = parseInt(payload.split("-")[1]);
+        switch (payload[0]){
+          case 'E':
+            self.robos[1].estadoAtual = parseInt(payload[1]);
+            self.robos[1].distancia = parseInt(payload.split("-")[1]);
+            self.robos[1].status = true;
+            break;
+          case 'R':
+            self.robos[0].status = false;
+            break;
+        }
       }
       session.subscribe('uepg.LuizRodolfo.robo_2', oneventRobo2);
       

@@ -11,6 +11,7 @@ import {StepperEstadosComponent} from './stepper-estados/stepper-estados.compone
 })
 export class RobotCardComponent implements OnInit {
   
+  @Input() status: boolean;
   @Input() id: number;
   @Input() nome: string;
   @Input() estados: Estado[];
