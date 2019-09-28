@@ -43,6 +43,7 @@ int velocidadeGlobal = 80;
 float potenciaEsquerda = 0.8;
 float potenciaDireita = 0.9;
 int distanciaInicial;
+int velFalha = 40;
 
 
 int estado;
@@ -221,7 +222,9 @@ void verificaEstado(){
         estado = AGUARDANDO_PACOTE;
       break;
     case FALHA_CONEXAO:
-      MQTT.publish(TOPICO_PUBLISH, "R2-0");
+      velFalha = -velFalha;
+      mover(velFalha);
+      MQTT.publish(TOPICO_PUBLISH, "D2-0");
       break;
   }
 

@@ -9,5 +9,6 @@ export interface Robo {
     distancia: number,
     velocidade: number,
     potenciaEsq: number,
-    potenciaDir: number;
+    potenciaDir: number,
+    conexao: boolean;
   }

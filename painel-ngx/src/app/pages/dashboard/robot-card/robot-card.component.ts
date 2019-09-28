@@ -20,6 +20,7 @@ export class RobotCardComponent implements OnInit {
   @Input() velocidade: number;
   @Input() potenciaEsq: number;
   @Input() potenciaDir: number;
+  @Input() conexao: boolean;
   @Output() altVelocidade = new EventEmitter<number[]>();
   @Output() altPotenciaEsq = new EventEmitter<number[]>();
   @Output() altPotenciaDir = new EventEmitter<number[]>();

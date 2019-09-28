@@ -23,7 +23,8 @@ export class DashboardComponent implements OnDestroy {
   private robos: Robo[];
   private connection : any;
   private session: any;
-  private timeout: any;
+  private timeout1: any;
+  private timeout2: any;
 
   solarValue: number;
   lightCard: CardSettings = {
@@ -117,7 +118,8 @@ export class DashboardComponent implements OnDestroy {
                 distancia: 0,
                 velocidade: 80,
                 potenciaEsq: 80,
-                potenciaDir: 90},
+                potenciaDir: 90,
+                conexao: true},
                 {status: false,
                 id: 2,
                 nome: "Robô 2",
@@ -131,7 +133,23 @@ export class DashboardComponent implements OnDestroy {
                 distancia: 0,
                 velocidade: 80,
                 potenciaEsq: 90,
-                potenciaDir: 70}];
+                potenciaDir: 70,
+                conexao: true}];
+  }
+
+  resetRobo(indice){
+    this.robos[indice].status = false;
+    this.robos[indice].estadoAtual = 0;
+    this.robos[indice].distancia = 0;
+    this.robos[indice].velocidade = 80;
+    this.robos[indice].conexao = true;
+    if(indice == 0){
+      this.robos[indice].potenciaEsq = 80;
+      this.robos[indice].potenciaDir = 90;
+    } else {
+      this.robos[indice].potenciaEsq = 90;
+      this.robos[indice].potenciaDir = 70;
+    }
   }
 
   conectar(){
@@ -150,17 +168,17 @@ export class DashboardComponent implements OnDestroy {
       function oneventRobo1(args) {
           //console.log("ROBO 1:", atob(args.substring(1,args.lenght))); //retirando caracter não reconhecido na posição 0
           let payload = atob(args.substring(1,args.lenght));
-
+          self.robos[0].status = true;
+          clearTimeout(self.timeout1);
+          self.timeout1 = setTimeout(function(){self.resetRobo(0);},1000);
           switch (payload[0]){
             case 'E':
-              clearTimeout(self.timeout);
+              self.robos[0].conexao = true;
               self.robos[0].estadoAtual = parseInt(payload[1]);
-              self.robos[0].distancia = parseInt(payload.split("-")[1]);
-              self.robos[0].status = true;
-              self.timeout = setTimeout(function(){self.setRobos();},1000);
+              self.robos[0].distancia = parseInt(payload.split("-")[1]);             
               break;
-            case 'R':
-              self.robos[1].status = false;
+            case 'D':
+              self.robos[0].conexao = false;
               break;
           }
 
@@ -171,15 +189,20 @@ export class DashboardComponent implements OnDestroy {
 
       function oneventRobo2(args) {
         //console.log("ROBO 2:", atob(args.substring(1,args.lenght))); //retirando caracter não reconhecido na posição 0
+
         let payload = atob(args.substring(1,args.lenght));
+
+        self.robos[1].status = true;
+        clearTimeout(self.timeout2);
+        self.timeout2 = setTimeout(function(){self.resetRobo(1);},1000);
         switch (payload[0]){
           case 'E':
+            self.robos[1].conexao = true;
             self.robos[1].estadoAtual = parseInt(payload[1]);
             self.robos[1].distancia = parseInt(payload.split("-")[1]);
-            self.robos[1].status = true;
             break;
-          case 'R':
-            self.robos[0].status = false;
+          case 'D':
+            self.robos[1].conexao = false;
             break;
         }
       }
