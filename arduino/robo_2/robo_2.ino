@@ -165,7 +165,7 @@ void trataMensagem(String msg){
       case VOLTANDO_POS_INICIAL:
         break;
       case FALHA_CONEXAO: //recebeu contato
-        estado = VOLTANDO_POS_INICIAL;
+        estado = AGUARDANDO_CONTATO;
         break;
     }
   }
@@ -216,7 +216,7 @@ void verificaEstado(){
       mover(-velocidadeGlobal);
       sprintf(payload,"%s%i","E5-",distancia);
       MQTT.publish(TOPICO_PUBLISH, payload);
-      if (distancia >= distanciaInicial && distancia <= distanciaInicial+20)
+      if (distancia >= distanciaInicial && distancia <= distanciaInicial+100)
         estado = AGUARDANDO_CONTATO;
       break;
     case FALHA_CONEXAO:

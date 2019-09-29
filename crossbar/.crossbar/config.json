@@ -1,12 +1,11 @@
 {
     "version": 2,
-    "controller": {},
     "workers": [
         {
             "type": "router",
             "realms": [
                 {
-                    "name": "realm1",
+                    "name": "tcc",
                     "roles": [
                         {
                             "name": "anonymous",
@@ -38,23 +37,71 @@
                         "type": "tcp",
                         "port": 8080
                     },
+                    "mqtt": {
+                        "options": {
+                            "realm": "tcc",
+                            "role": "anonymous",
+                            "payload_mapping": {
+                                "": {
+                                    "match": "prefix",
+                                    "type": "passthrough"
+                                }
+                            }
+                        }
+                    },
                     "rawsocket": {
+                        "serializers": [
+                            "cbor", "msgpack", "ubjson", "json"
+                        ]
                     },
                     "websocket": {
                         "ws": {
-                            "type": "websocket"
+                            "type": "websocket",
+                            "serializers": [
+                                "cbor", "msgpack", "ubjson", "json"
+                            ]
                         }
                     },
                     "web": {
                         "paths": {
                             "/": {
                                 "type": "static",
-                                "directory": "../web"
+                                "directory": "../web",
+                                "options": {
+                                    "enable_directory_listing": true
+                                }
                             }
                         }
+                    }
+                }
+            ]
+        },
+        {
+            "type": "container",
+            "options": {
+                "pythonpath": [
+                    ".."
+                ]
+            },
+            "components": [
+                {
+                    "type": "class",
+                    "classname": "inputs.MySession",
+                    "realm": "tcc",
+                    "transport": {
+                        "type": "websocket",
+                        "endpoint": {
+                            "type": "tcp",
+                            "host": "localhost",
+                            "port": 8080
+                        },
+                        "url": "ws://localhost:8080/ws"
                     }
                 }
             ]
         }
     ]
 }
+
+
+

@@ -167,7 +167,7 @@ void trataMensagem(String msg){
       case VOLTANDO_POS_INICIAL:
         break;
       case FALHA_CONEXAO: //recebeu contato
-        estado = VOLTANDO_POS_INICIAL;
+        estado = AGUARDANDO_PACOTE;
         break;
     }
   }
